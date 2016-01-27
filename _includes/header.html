@@ -6,7 +6,7 @@
         <title>{{ page.title }} | ffledgling&#039;s blog</title>
         <link rel="profile" href="http://gmpg.org/xfn/11" />
         <!--[if lt IE 9]>
-            <script src="http://blog.ffledgling.com/wp-content/themes/ryu/js/html5.js" type="text/javascript"></script>
+        <script src="{{site.url}}/javascript/html5.js" type="text/javascript"></script>
         <![endif]-->
 
         <!--
@@ -14,13 +14,13 @@
         <link rel="alternate" type="application/rss+xml" title="ffledgling&#039;s blog &raquo; Comments Feed" href="http://blog.ffledgling.com/comments/feed/" />
         <link rel="alternate" type="application/rss+xml" title="ffledgling&#039;s blog &raquo; Starting out with TaskCluster Comments Feed" href="http://blog.ffledgling.com/starting-out-with-taskcluster/feed/" />
         -->
-        <link rel='stylesheet' id='genericons-css'  href='http://blog.ffledgling.com/wp-content/themes/ryu/genericons/genericons.css?ver=3.0.3' type='text/css' media='all' />
-        <link rel='stylesheet' id='ryu-style-css'  href='http://blog.ffledgling.com/wp-content/themes/ryu/style.css?ver=3.9.2' type='text/css' media='all' />
+        <link rel='stylesheet' id='genericons-css'  href='{{site.url}}/css/genericons.css' type='text/css' media='all' />
+        <link rel='stylesheet' id='ryu-style-css'  href='{{site.url}}/css/style.css' type='text/css' media='all' />
         <link rel='stylesheet' id='syntax-css'  href='{{site.url}}/css/syntax.css' type='text/css' media='all' />
         <link rel='stylesheet' id='ryu-lato-css'  href='http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900,100italic,300italic,400italic,700italic,900italic' type='text/css' media='all' />
         <link rel='stylesheet' id='ryu-playfair-display-css'  href='http://fonts.googleapis.com/css?family=Playfair+Display:400,700,900,400italic,700italic,900italic&#038;subset=latin,latin-ext' type='text/css' media='all' />
-        <script type='text/javascript' src='http://blog.ffledgling.com/wp-includes/js/jquery/jquery.js?ver=1.11.0'></script>
-        <script type='text/javascript' src='http://blog.ffledgling.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.2.1'></script>
+        <script type='text/javascript' src='{{site.url}}/javascript/jquery.js'></script>
+        <script type='text/javascript' src='{{site.url}}/javascript/jquery-migrate.min.js'></script>
         <!--
         <link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://blog.ffledgling.com/xmlrpc.php?rsd" />
         <link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://blog.ffledgling.com/wp-includes/wlwmanifest.xml" /> 
@@ -48,12 +48,12 @@
             <header id="masthead" class="site-header" role="banner">
                 <div class="wrap">
 
-                    <a class="site-logo"  href="http://blog.ffledgling.com/" title="ffledgling&#039;s blog" rel="home">
+                    <a class="site-logo"  href="{{site.url}}" title="ffledgling&#039;s blog" rel="home">
                         <img src="http://gravatar.com/avatar/fc8f2fe7943cbef79c87fb6099407be0/?s=120&#038;d=mm" width="120" height="120" alt="" class="no-grav header-image" />
                     </a>
 
                     <hgroup>
-                    <h1 class="site-title"><a href="http://blog.ffledgling.com/" title="ffledgling&#039;s blog" rel="home">ffledgling&#039;s blog</a></h1>
+                    <h1 class="site-title"><a href="{{site.url}}" title="ffledgling&#039;s blog" rel="home">ffledgling&#039;s blog</a></h1>
                     <h2 class="site-description">“You&#039;re never given a dream without also being given the power to make it true.”</h2>
                     <div class="wrap">
                     </hgroup>
@@ -65,7 +65,7 @@
                     <div class="wrap">
                         <ul id="menu-menu" class="menu">
                             <li id="menu-item-39" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-39">
-                                <a href="http://blog.ffledgling.com">Home</a>
+                                <a href="http://{{site.url}}">Home</a>
                             </li>
                             <li id="menu-item-634" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-634">
                                 <a href="http://ffledgling.com/contact.html">Get in touch</a>
