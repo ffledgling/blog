@@ -1,0 +1,54 @@
+---
+layout:
+---
+
+{% include header.html %}
+
+<div class="home">
+
+    {% for post in site.posts %}
+    <article id="post-701" class="post-701 post type-post status-publish format-standard hentry category-releng category-taskcluster tag-internship tag-mozilla tag-release-engineering tag-spidermonkey tag-taskcluster-2 clear">
+        <div class="entry-wrap wrap clear">
+
+            <header class="entry-header">
+
+                {% if post.categories %}
+                <span class="categories-links">
+                    {% for category in post.categories %}
+                    <a href="http://blog.ffledgling.com/category/{{category}}/" title="View all posts in {{category}}" rel="category tag">{{category}}</a>,
+                    {% endfor %}
+                </span>
+                {% endif %}
+
+                <a href="{{site.url}}{{post.url}}">
+                    <h1 class="entry-title">{{ post.title }}</h1>
+                </a>
+            </header><!-- .entry-header -->
+
+            <footer class="entry-meta">
+                <span class="entry-date">
+                    <time datetime="2015-07-20T03:34:18+00:00">{{ post.date | date: "%b %d, %Y" }}</time>
+                </span>
+                <span class="entry-word-count">
+                    {{ post.content | number_of_words }} Words
+                </span>
+                {% if post.tags %}
+                <span class="tags-links">
+                    {% for tag in post.tags %}
+                    <a href="http://blog.ffledgling.com/tag/{{tag}}/" rel="tag">{{tag}}</a>,
+                    {% endfor %}
+                </span>
+                {% endif %}
+            </footer><!-- .entry-meta -->
+
+            <div class="entry-content clear">
+                {{post.content | strip_html | truncatewords: 50 }}
+            </div><!-- .entry-content -->
+
+        </div><!-- .entry-wrap -->
+    </article><!-- #post-## -->
+
+    {% endfor %}
+
+</div>
+{% include footer.html %}

@@ -1,0 +1,115 @@
+---
+layout: post
+status: publish
+published: true
+title: Beyond Hello World
+author:
+  display_name: ffledgling
+  login: ffledgling
+  email: ffledgling@gmail.com
+  url: ''
+author_login: ffledgling
+author_email: ffledgling@gmail.com
+wordpress_id: 638
+wordpress_url: http://blog.ffledgling.com/?p=638
+date: '2014-09-25 05:53:06 -0400'
+date_gmt: '2014-09-25 00:23:06 -0400'
+categories:
+- Technical
+tags:
+- Racket
+comments: []
+---
+<p>Anytime anyone starts learning a Programming langauge they start out with the traditional "Hello-World" program.</p>
+<p>This is great for a beginner i.e for someone who's done little to no programming before because it gives some form of output immediately without putting in much effort <strong>^1</strong> .</p>
+<p>This is good because it provides instant gratification in some sense and acts as bait to get a newcomer hooked.</p>
+<p>There's amazement -- "I just made the computer talk! So cool!"</p>
+<p>It's all very exciting... for a beginner.</p>
+<p>When a person who's been programming for a while tries to pick up a new language, the "Hello World" route isn't necessarily the best way to get started.</p>
+<p>It serves no real purpose to start out outputting text to screen because it's no longer amazing and isn't a great indicator of the languages real capabilities, strengths or flaws.<br />
+The only thing that is immediately clear is how verbose the language is likely to be.</p>
+<p>Here are "Hello World" Programs in a couple of common languages:</p>
+
+{% highlight bash %}
+# Bash
+echo Hello World
+{% endhighlight %}
+
+{% highlight python %}
+# Python
+print 'Hello World'
+{% endhighlight %}
+
+{% highlight c %}
+// C
+#include<stdio.h>
+int main(){
+    printf("Hello World\n");
+}
+{% endhighlight %}
+
+{% highlight scheme %}
+;; Scheme/Racket
+(print "Hello World")
+{% endhighlight %}
+
+{% highlight java %}
+/* Java */
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World");
+    }
+}
+{% endhighlight %}
+
+{% highlight rust %}
+// Rust
+fn main() {
+println!("Hello World");
+}
+{% endhighlight %}
+
+{% highlight javascript %}
+// Javascript
+console.log("Hello World");
+{% endhighlight %}
+
+<p>Looking at these 7 odd snippets of code all one can really conclude is that Bash, JavaScript, Python and Scheme are a little less tedious to write than the rest.</p>
+<p>In real life scenarios all 7 of these languages are used for vastly different things and have vastly different advantages, the tedium of writing them is typically the last concern.</p>
+<p>What I'm trying to say is sometimes a "Hello World" isn't enough.<br />
+All the smart people I've talked to always suggest picking up a small "project" when learning a language because:</p>
+<ul>
+<li>It keeps you interested.</li>
+<li>Projects typically force you to explore different parts of the language.</li>
+<li>You get some real world experience with the language.</li><br />
+</ul><br />
+I've tried taking this advice and it works out fairly well.<br />
+Pick a language, run through it's basics fairly quickly (a day or so) and then get hacking on an easy-ish project, typically it helps if you don't have to learn a&nbsp;<strong>lot</strong> of <em>other</em> concepts while you're building your project so that you can dedicate most of your time to learning the language itself.</p>
+<p>Recently I've been trying to pick up Racket as a language in my spare time (It's also used in a course I'm taking, but a very limited subset).</p>
+<p>Now there's an amazing <strong>#racket</strong> community on freenode and they use <a href="http://pasterack.org" target="_blank">Pasterack </a>to share code amongst themselves.<br />
+The clever thing about this pastebin is that it's an evaulating pastebin. It takes your code, runs it in a sandbox and shows the evaluated output as well as the code itself.</p>
+<p>Pretty neat.</p>
+<p>I wanted to start using this pastebin as well, but having gotten used to <strong>mozpaste</strong>, <strong>fpaste</strong> and <strong>pastebinit</strong>, I no longer have the patience to actually copy text from my terminal, paste it into a webpage, submit the form and the copy and paste the url to the person I'm taking in IRC.</p>
+<p>It's a hassle.</p>
+<p>And so I decided that I would write a pastebin script for <a href="http://pasterack.org" target="_blank">Pasterack</a>.</p>
+<p>I've written pastebin scripts before and it's not a really complicated task.<br />
+The reason writing a pastebin script is so useful is because despite its simplicity, it typically covers a very wide subset of language's capabilities. You'll be using the language's OS interfacing capabilities.</p>
+<p>Filesystem I/O, string Parsing, HTTP/Network libraries, command line parsing, Error handling and bit of regex thrown in here and there for good measure.</p>
+<p>I'm not claiming that a pastebin script is the miracle program that will tell you everything about the language, it's not.</p>
+<p>It will on the other hand definitely give you a better idea of how much it excels at doing various things. Questions like:</p>
+<ul>
+<li><em> "Is the language great for prototyping?"</em></li>
+<li><em> "Is it easy to write readable code?"</em></li>
+<li><em>&nbsp;"Does it come with a great builtin set of tools?"</em></li>
+<li><em>&nbsp;"Is it fast?"</em></li>
+<li><em> "Is it a nightmare to debug?"</em></li><br />
+</ul><br />
+and many others can be answered with an <em>easy-ish</em> project like this.</p>
+<p>I did end up writing that pastebin script for <a href="http://pasterack.org" target="_blank">Pasterack</a> and it can be found at&nbsp;<a href="https://github.com/ffledgling/PasteRackIt" target="_blank">PasteRackIt</a>.</p>
+<p>It took me about 2 days and lots of blundering through the Racket Docs<strong>^2</strong> before I had anything substantial, but as a result of it all I've seen a lot more of the language than I would have if I were limited to using it in my course.</p>
+<p>The takeaway from this article is that when learning something it's always a great idea to go beyond the usual <em>"Hello World"</em> equivalent. Find your own "<em>Pastebin</em>" and work on it, hack away in the language of your choice and maybe, just maybe there's some skill to be gained that way.</p>
+<hr />
+<p>&nbsp;</p>
+<p><strong>^1</strong> Unless you're writing Java. Tough luck in that case pal.</p>
+<p><strong>^2</strong> The <a href="http://docs.racket-lang.org/" target="_blank">Racket Docs</a> are amazing btw.</p>
+<p>&nbsp;</p>

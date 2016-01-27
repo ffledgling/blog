@@ -1,0 +1,106 @@
+---
+layout: post
+status: publish
+published: true
+title: What the hell is funsize? (Introduction)
+author:
+  display_name: ffledgling
+  login: ffledgling
+  email: ffledgling@gmail.com
+  url: ''
+author_login: ffledgling
+author_email: ffledgling@gmail.com
+wordpress_id: 571
+wordpress_url: http://ffledgling.wordpress.com/?p=571
+date: '2014-07-20 18:04:10 -0400'
+date_gmt: '2014-07-20 18:04:10 -0400'
+categories:
+- Funsize
+- Internship
+- Mozilla
+- Releng
+tags:
+- funsize
+- Internship
+- mozilla
+- Releng
+- Technical
+comments: []
+---
+<p><a href="https://github.com/mozilla/build-funsize"><img src="https://octodex.github.com/images/baracktocat.jpg" alt="" width="896" height="896" title="And that's exactly how our eyes look after a night of ceaseless monitor peering too."/></a></p>
+<p>This is a post I have been putting off writing for a while now.<br />
+But now that I've finally gotten down to it, let's begin!</p>
+<p>The first question anyone might ask is <em>What the hell is a funsize?</em><br />
+Go look at <a href="http://ffledgling.wordpress.com/2014/07/20/what-the-hell-is-funsize-etymology/">Funsize Etymology</a>.</p>
+<p>Now that we have that out of the way, let's <em>actually</em> begin.</p>
+<p>Funsize or Senbonakura&#042; is technically a "Partial MAR generation service" that generates "Partial MARs on demand".<br />
+Too much jargon? No problemo, Sen&otilde;r.<br />
+We'll break it down bit by bit.</p>
+<p>If you've ever used Firefox, and I hope you have, you'll know that Firefox ships automatic updates to users that install in the background and get applied when you reboot.</p>
+<p>Nifty, right?</p>
+<p>What you may or may not know is the stuff that goes on behind the scenes.<br />
+Getting updates to your browser and getting them so that they don't break your browser is harder than you might think. <a href="https://wiki.mozilla.org/ReleaseEngineering">We</a> and by we I mean your friendly, probably-not-in-your-neighbourhood <a href="https://wiki.mozilla.org/ReleaseEngineering#Team">Release Engineering Team</a> do a lot of stuff to make sure that doesn't happen.</p>
+<p>There's a h<del>uge</del> Ginormous <a href="https://wiki.mozilla.org/images/5/5b/Releng_flow_onepage.pdf">Pipeline</a>.</p>
+<p>My project focuses on a small part of it.</p>
+<p>Applications are growing in size these days and so are their installers. Weighing in at <code>35MB</code> for Linux64 install, <code>28MB</code> for the Windows setup and a hefty <code>58MB</code> for the MacOSX install of the latest Firefox Release Builds.They are big, so whenever you're served an update, you aren't given the entire new installer to install off of unless it is deemed <em>absolutely</em> necessary.</p>
+<p>We at Mozilla value your bandwidth, because not everyone lives in a country with unlimited bandwidth. We at Mozilla also value <em>our</em> bandwidth because serving complete installers where it's not necessary isn't great for resources, server load and CDN costs.</p>
+<p>Enter, <strong>Partial Updates</strong>.</p>
+<p>Partial Updates, as the name suggests, are <em>not</em> Complete Updates.</p>
+<p>The rationale behind Partial Updates is that we don't really need to give you an update in the form of an entire new installer because even though things change from version to version; a lot of thing also remain the same.</p>
+<p>So what we do instead is just give you the bits that change.</p>
+<p>It's called a 'diff', or more precisely in our case, a 'binary diff' in developer parlance. We figure out what changed between the version you have and the version you're being updated to and then send you the diff. Diffs are typically much smaller than the entire installer.<br />
+Sometimes, up to 1/7th the size of a Complete update, depending on what platform and which channel you're on.</p>
+<p>This reduced size seems like a win-win for everybody involved, and it is ... mostly.</p>
+<p>Unfortunately generating these 'Diff's is not a computationally cheap process.</p>
+<p>Infact it can take a while.</p>
+<p>My super fast, work machine can take anywhere between 1-5 minutes to generate this, and the production machines that actually generate the official "Partials" aren't nearly as powerful. So expect times to be longer than those on my developer machine. Now 3 minutes (on average, say) to generate an Update doesn't sound like a lot.</p>
+<p>And you're right, it's not a whole lot... for one Partial.</p>
+<p>Here's where I'd like to emphasize the diversity with which Mozilla and thus the scale at which RelEng works kicks in.</p>
+<p>We have upto 97 different locales we ship.<br />
+For 4 different Operating Systems.<br />
+And we do such shipments everyday.<br />
+Nightly and Aurora in addition to the less frequent Bi-Weekly Beta and 6-Weekly Release Builds.<br />
+Oh and did I mention we go back upto 3 versions of Firefox everytime?</p>
+<p>The numbers add up.</p>
+<p>I'll would let you <em>do the math</em>.<br />
+But just to drive the point home, we spend 9 days of compute time.</p>
+<p>Every. Single. Week.<br />
+Just for generating updates.<br />
+And this is not even counting the other branches like UX or E10S.</p>
+<p>Like I said, it all adds up.</p>
+<p>Now this is where my application comes in.<br />
+Caveat lector: Senbonzakura/Funsize is far done, and there's still stuff to be done before it becomes "profitable" so to speak, but that doesn't mean that it's goals aren't ambitious.</p>
+<p>So what does my application <em>do</em>?</p>
+<p>It does one thing and one thing only; it generates Partials.<br />
+And it's sole purpose, is to do so efficiently.<br />
+In essence, Senbonzakura/Funsize is a web service that generates a partial between any two versions of Firefox you need it to.</p>
+<p>There are a lot of advantages to having a dedicated service for something like this.</p>
+<ul>
+<li>The service can optimize for speed for generation of partials in ways that the current "Generate-Partials-as-part-of-Release" process can't.<br />
+There are possibilities of diff and file level caching across versions and locales. Imagine generating a diff for one locale of Firefox and being&nbsp; able to use it across locales. If we go by ballpark numbers that should mean reduction in compute time by a factor of 89. In practice it may not touch that number, but it will still be a sizeable factor nonetheless.</li><br />
+</ul></p>
+<ul>
+<li>We can generate partials that were not possible before, or had to be generated by hand.<br />
+Sometimes a lot of users are using an older version of Firefox. A version that had a massive uptake at the time of release, but maybe not a whole lot of users updated it since.<br />
+Now they're all clamouring for the next big release.<br />
+If the version in question is more than 3 versions before the current release, they'll end up being given a complete installer instead of a partial, because we <em>do</em> want them to update, for their sake and ours. Once Senbonzakura/Funsize comes into play, the entire process of identifying a large user pool and migrating it to a new version via partials can be automated, because the service can generate a partial <strong>on demand</strong>.</li><br />
+</ul></p>
+<p>Having a separate service do the heavy lifting also moves the update generation process out of the critical release pipeline. This results in faster builds and less chance of bustage.<br />
+There are also other smaller, albeit equally important use cases, where we need to migrate people from an no-longer-supported locale to the nearest supported one.</p>
+<p>What does it run on, you ask?</p>
+<p>It's basically a <a href="http://flask.pocoo.org/">flask</a> app, with a <a href="http://www.celeryproject.org/">celery</a> backend, while tying into a self-written file cache and a SQLite or MySQL database, depending on your choice. We're also doing a little bit of docker with a dash of AWS.</p>
+<p>It sounds fairly simple, but I've had my share of architectural and debugging "nightmares".<br />
+But maybe that's just an Intern-I-have-no-idea-what-I'm-doing.jpg thing.</p>
+<p><img src="http://www.element14.com/community/servlet/JiveServlet/showImage/38-15476-194774/i-have-no-idea-what-im-doing-dog.jpg" alt="" width="400" height="254" title="I'm an Intern, did you honestly expect better?" /></p>
+<p>The application is still very much a work in progress and there's a lot to be improved, but it's getting better and hopefully I'll have the chance and time to keep working on it to get it in even better shape.</p>
+<p>Now, if the ELT could please switch the spotlight to point towards our audience.</p>
+<p><strong><begin></strong><br />
+If <strong>you</strong> dear reader found this project interesting and you are able and willing to contribute, read on!</p>
+<p><a href="https://wiki.mozilla.org/ReleaseEngineering#Team">Mozilla's Release Engineering Team</a> is looking for talented young contributors like yourself to help out! Don't waste a day, join #releng on <a href="irc://irc.mozilla.org">IRC</a> TODAY and ask how you can contribute to awesome!</p>
+<p>If you're looking for information on how to get started with Senbonzakura/Funsize in particular, I have this amazing, albeit incomplete <a href="https://gist.github.com/ffledgling/71dc7bef3708546915f2">HOWTO Start contributing guide</a> that I wrote on a bus back from LA with my eyes closed.<br />
+<strong></end id='shameless plug'></strong></p>
+<hr />
+<p>&#042; It will always and forever be Senbonzakura to me.</p>
+<hr />
+<h3>Update</h3></p>
+<p>I did a talk about Senbonzakura/Funsize at the Mozilla SFO office (as part of my Internship) go watch it <a href="https://air.mozilla.org/firefox-and-its-updates/">here!</a></p>

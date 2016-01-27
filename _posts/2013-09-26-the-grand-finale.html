@@ -1,0 +1,65 @@
+---
+layout: post
+status: publish
+published: true
+title: The Grand Finale
+author:
+  display_name: ffledgling
+  login: ffledgling
+  email: ffledgling@gmail.com
+  url: ''
+author_login: ffledgling
+author_email: ffledgling@gmail.com
+wordpress_id: 316
+wordpress_url: http://ffledgling.wordpress.com/?p=316
+date: '2013-09-26 23:53:56 -0400'
+date_gmt: '2013-09-26 23:53:56 -0400'
+categories:
+- Google Summer of Code
+- Mozilla
+tags:
+- Firefox
+- Google Summer of Code
+- gsoc
+- Mozbase
+- mozilla
+- OpenSource
+- unittesting
+comments:
+- id: 2
+  author: GSoC 2013 Successes | Hacking for Christ
+  author_email: ''
+  author_url: http://blog.gerv.net/2013/10/gsoc-2013-successes/
+  date: '2013-10-09 14:54:31 -0400'
+  date_gmt: '2013-10-09 14:54:31 -0400'
+  content: '[&#8230;] Added a large suite of unit tests to Mozbase [&#8230;]'
+---
+<p><a href="http://blog.ffledgling.com/wp-content/uploads/2013/09/header-firefox.png"><img class="alignnone size-medium wp-image-332" alt="header-firefox" src="http://blog.ffledgling.com/wp-content/uploads/2013/09/header-firefox.png?w=223" width="223" height="84" /></a></p>
+<p>This will probably be my last post regarding my Summer of Code with Mozilla, and I imagine if I were writing this with paper and quill, I would indeed have been writing this last entry with a heavy hand.</p>
+<p>There exists a saying that tells me "All good things must come to pass".<br />
+Although sadly true, sometimes I wonder if some things are <em><strong>too</strong></em> good to deserve the same fate as all the <em>other</em> good things.</p>
+<p>My stint with Mozilla being the case in point. The past 3 months have been immensely enjoyable, full of excitement and activity. I had the pleasure of working with an amazing team of people who work for a <a href="http://www.mozilla.org/en-US/about/manifesto/">noble cause</a>. My stay with the Automation and Tools team has been an enriching experience and one that I shall cherish for a long time.<br />
+My writing might convey a sense of parting, but thankfully once introduced to the world of OpenSource one can never truly part. &nbsp;I hope to be able to stay and contribute to Mozilla in the future as I have in the past.</p>
+<p>Since this is the penultimate if not the ultimate post in this series of Summer of Code posts, I feel the need to try and briefly summarize the events of days past.</p>
+<p>My Project with Mozilla over the summer consisted of writing tests for Mozbase. Mozbase is a base library used by most of the other test harnesses that are used to automate the installation, logging and testing of the various software products that Mozilla builds, Firefox and FirefoxOS being the most notable.<br />
+One by one I picked up the modules in Mozbase and wrote tests for them at the rate of roughly a module per one and a half week.<br />
+I must pause here and point out how well planned the schedule for my project was, allowing me enough time to cope with the new code, before handing me slightly more complex modules, and for this I owe a debt of gratitude to Clint Talbert(my mentor for the project)&nbsp;who, basically, had it all figured out.</p>
+<p>I started my quest with Mozfile (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=885224">#885224</a>), which is a cross platform utility to handle file I/O operations. Mozinfo (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=885145">#885145</a>)&nbsp;came next, this module was a bit of a surprise to me for I hadn't seen a module like this before. All it literally does is give information about the platform on which it runs, or sometimes simulates information about a different platform for the purposes of testing.</p>
+<p>Having worked with, understood and written tests for two modules successfully, I now faced Moznetwork (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=796017">#796017</a>). This is where I first&nbsp;<em>really</em> ran into what would later become a recurring <em>challenge</em>&nbsp;throughout my project, this <em>challenge</em>&nbsp;goes by various names, sometimes it's called WindowsError, sometimes another MacOSX only exception, most people know these collectively as Cross-Platform issues. After copious amounts of time and effort were spent, mostly by jhammel, wlach, ahal and Mook who would've burst a vein answering my repeated questions had they not been endowed with Monk-like patience, Mozinstall tests finally started working properly. Moznetwork on the other hand was kind towards me, I got to play around with network interfaces and write some regex which is always fun.</p>
+<p>On to another network-ish module Mozhttpd (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=889709" target="_blank">#889709</a>) &nbsp;which is a simple webserver written in python used for internal testing. Mozhttpd was particularly memorable because it was the only module whose tests failed for me after both a fresh pull and a clone, after debugging I came to know that it was a proxy/environment issue(I access the internet via a proxy, so I have http_proxy variables set everywhere). I'm not sure if I filed a bug for it though, since it's a weird edge case, lucky me sitting right on that edge :P .</p>
+<p>Moznetwork marked the end of the simpler modules, time to meet the heavyweights, Mozdevice(<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=894062">#894062</a>), Mozprofile(), Mozprocess().<br />
+Up first was Mozdevice, this was a particularly enjoyable module, I got to muck around with android internals, emulators and adb a bit. Wlach really helped me through this one with lots of tips that were invaluable when I needed to set up the test environment. Being a large module, this one took me more time than the earlier modules, a little over 2 weeks, but by the end of it we had tests for the DeviceManager class.</p>
+<p>After wrapping up Mozdevice I moved onto Mozprofile(<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=898265">#898265</a>). Mozprofile is a module that handles almost all firefox profile related tasks, from major profile data to addons. Mozprofile saw me reading through the code more carefully than the other modules, partly because of the tricky cleanup/__del__ procedure and partly because I'd had not so pleasant run-ins with mozprofile in the past. It wasn't nearly as bad as I'd orginally imagined it would be, and infact turned out to be quite an enjoyable experience. I ended up mostly writing tests for the addons manager. I also found a couple of tiny bugs and filled a few more during the course of my&nbsp;<em>"investigations",&nbsp;</em>some of which were fixed right away incidentally.</p>
+<p>Lastly we come to Mozprocess (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=778267" target="_blank">#778267</a>). Mozprocess is a monster module in terms of complexity and size (I exaggerate of-course, but yes it's big and complex). Existing mozprocess tests were written in a mixture of C and python which made them hard to compile and run, especially on the build slaves on Mozilla's automation infrastructure.<br />
+My first task was to try and port the existing C tests to python, or if that didn't work out rid the existing C tests of the external library dependency making them easier to compile, run and automate. The python porting worked out and I started rewriting all the existing tests to work with the new API that I and jhammel came up with.<br />
+The new API allows creating arbitrary process trees, with multiple children each with their own timeouts at each level of depth. Although this might sound fancy, it's nothing more than a little rewriting of the controlling <em>.ini</em> manifest file. The processlauncher code did require a major rehaul for the new API though. During the process of porting and re-doing proclaunch.py I wrote some of my most beautiful and comprehensive documentation, even if I say so myself. :P<br />
+If you've been reading carefully, I mentioned my arch Nemesis WindowsError, well guess what? It decided it was about time to drop by while I'm on my final module. Long story short windows tests still fail on Windows and that needs fixing, the *nixs on the other hand are running right as rain.</p>
+<p>All code that I've produced over the summer has been reviewed by atleast one member of the Automation and Tools team and has been checked into the github repository, which can be found <a href="https://github.com/mozilla/mozbase/">here</a>. All documentation in the code takes place within the code itself, and all checked-in code contains the relevant documentation.</p>
+<p>Related misc. fixes and filings:</p>
+<ul>
+<li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=888741">Bug&nbsp;888741</a></li>
+<li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=888756">Bug&nbsp;888756</a></li>
+<li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=892902">Bug 892902</a></li>
+<li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=902209">Bug&nbsp;902209</a></li>
+<li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=900154">Bug&nbsp;900154</a></li><br />
+</ul></p>

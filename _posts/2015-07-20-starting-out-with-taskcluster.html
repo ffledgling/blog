@@ -1,0 +1,81 @@
+---
+layout: post
+status: publish
+published: true
+title: Starting out with TaskCluster
+author:
+  display_name: ffledgling
+  login: ffledgling
+  email: ffledgling@gmail.com
+  url: ''
+author_login: ffledgling
+author_email: ffledgling@gmail.com
+wordpress_id: 701
+wordpress_url: http://blog.ffledgling.com/?p=701
+date: '2015-07-20 03:34:18 -0400'
+date_gmt: '2015-07-19 22:04:18 -0400'
+categories:
+- Releng
+- taskcluster
+tags:
+- Internship
+- mozilla
+- Spidermonkey
+- Release Engineering
+- TaskCluster
+comments:
+- id: 3359
+  author: Pete Moore
+  author_email: pmoore@mozilla.com
+  author_url: https://github.com/petemoore
+  date: '2015-09-07 20:46:43 -0400'
+  date_gmt: '2015-09-07 15:16:43 -0400'
+  content: "Thanks for this great article! I just wanted to highlight there is also
+    now a java client too. =)\r\n\r\nhttp://taskcluster.github.io/taskcluster-client-java\r\n\r\nAlso,
+    this page renders slightly more nicely for the go client:\r\n\r\nhttp://taskcluster.github.io/taskcluster-client-go"
+---
+<p>Over the past couple of weeks I've been working on migrating Spidermonkey builds to a new platform that Mozilla's teams have access to called TaskCluster.</p>
+<p>When I started out initially I saw quite a lot of documentation and code, but I still had to go ask people for how to go about certain things, for lack of a 'tutorial' of sorts that made all the pieces fit together.</p>
+<p>Given that a lot of the people might like to leverage TaskCluster in the future, I figured it might be a good idea to walk through how I went about it, which should give a better over picture of what taskcluster can do and how the pieces fit together.</p>
+<p>This won't be a tutorial or anything of the sort, but if starting out, should still serve as a decent example-oriented 'guide' of how one might go about things.</p>
+<p>If you already know the what, why and when of taskcluster, skip to the '<em><strong>My Process</strong></em>' section for the how.</p>
+<h2>What is it?</h2><br />
+This is not an easy question to answer. In essence it's a task automation system. All it's functionality is exposed via APIs documented at <a href="http://docs.taskcluster.net" target="_blank">http://docs.taskcluster.net</a>. You can use it to define and launch arbitrary tasks. For example, anything that you can run on a Linux box can most likely be run on taskcluster as a stand alone task. There's already work in progress to get thing running on Windows, with OSX and possibly physical devices such as phones follow in the future.</p>
+<p>The important thing to note is that taskcluster is an API based service, which means you can use&nbsp;<a title="TaskCluster Tools" href="https://tools.taskcluster.net" target="_blank">TaskCluster Tools</a> which is a front end for most of the API end points, or write your own. You can also use curl or wget if you're feeling really old-school or hardcore. But ideally if you're writing anything serious, please consider using the taskcluster client libraries written for&nbsp;<a href="https://github.com/taskcluster/taskcluster-client" target="_blank">node</a>,&nbsp;<a href="https://github.com/taskcluster/taskcluster-client.py" target="_blank">python</a> or&nbsp;<a href="https://github.com/taskcluster/taskcluster-client-go" target="_blank">golang</a>.</p>
+<h2>What can I use it for?</h2><br />
+Builds, Tests, automation tasks, one-off tasks, pretty much everything. There's work underway to allow one to run security critical tasks safely as well.</p>
+<h2>Where do I go looking for help?</h2><br />
+I've found to be helpful, but it takes a little getting used to the navigation and lookup style. Looking at existing examples of how things work <a href="https://dxr.mozilla.org/mozilla-central/source/testing/taskcluster/" target="_blank">in-tree</a> is also a great to way to figure out how things are done. These is also a <a href="https://www.youtube.com/channel/UCD0odAg4RgoTDdomOx7lSuw" target="_blank">taskcluster Youtube channel</a> with tutorials being uploaded to it.</p>
+<p>If everything else fails,&nbsp;<a href="irc.mozilla.org:6697/#taskcluster" target="_blank">#taskcluster</a> is your friend.</p>
+<h2>My process</h2><br />
+TaskCluster accepts docker images to run tasks in. You create a docker image with your environment and then pass taskcluster the command you want to run inside a container with that image. How this is done, I'll come to shortly, but I'd like to point out that docker-worker, the one that I used for this particular piece is one of two currently available types, the other being generic-worker.<br />
+In theory, automation by taskcluster is not limited to any of these and anyone can write their own worker that could run on any platform.</p>
+<p>If you want to automate on anything other than Linux, you'll probably need generic-worker at the time of writing and it's near future.</p>
+<p>Migrating Spidermonkey Builds to Taskcluster and getting them in a state that people could use them was a two step process (only in hindsight, bah agile).</p>
+<p>This is what it looks like:</p>
+<h2>Phase I (See&nbsp;<a href="https://bugzil.la/1164656" target="_blank">Bug 1164656</a>)</h2></p>
+<ul>
+<li>Figure out how to run a Spidermonkey build in a docker container</li>
+<li>Create Dockerfile for said container</li>
+<li>Create a script with the commands you want to run inside the container.</li>
+<li>Test Docker image and script</li>
+<li>Create the task payload.</li>
+<li>Test payload and image + container by manually triggering a task using&nbsp;<a href="https://tools.taskcluster.net/task-creator/" target="_blank">Task-Creator</a></li>
+<li>Iterate until satisfaction</li><br />
+</ul></p>
+<h2>Phase II (See <a href="https://bugzil.la/1174376" target="_blank">Bug 1174376</a>)</h2><br />
+&nbsp;</p>
+<ul>
+<li>Figure out the different possible combinations of variables (platform, type, etc.) that spidermonkey builds can take. See this comment(Add these to [Try](https://hg.mozilla.org/try)/[Treeherder](https://treeherder.mozilla.org) by</li><br />
+</ul></p>
+<ol>
+<li>Adding job flags [here](https://dxr.mozilla.org/mozilla-central/source/testing/taskcluster/tasks/job_flags.yml)</li>
+<li>Also adding them in a slightly different format [here](https://dxr.mozilla.org/mozilla-central/source/testing/taskcluster/tasks/branches/try/job_flags.yml)</li>
+<li>Finally create job configurations under [here](https://dxr.mozilla.org/mozilla-central/source/testing/taskcluster/tasks/builds)</li>
+<li>Run <strong>./mach taskcluster-graph</strong> with the newly added try flags, make sure the output looks about right and is close to that from Phase 1</li><br />
+</ol></p>
+<ul>
+<li>Push to try with the newly added flags, watch treeherder for your push to show up correctly</li>
+<li>It probably didn't show up correctly on the first go, investigate, fix, iterate.</li>
+<li>Figure out what artifacts need to go out of the build and then add put them in the right place (most likely&nbsp;<strong>$HOME/artifacts</strong>)</li><br />
+</ul></p>

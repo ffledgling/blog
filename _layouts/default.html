@@ -1,0 +1,75 @@
+{% include header.html %}
+
+            <div id="main" class="site-main">
+                <div id="primary" class="content-area">
+                    <div id="content" class="site-content" role="main">
+
+
+                        <article id="post-701" class="post-701 post type-post status-publish format-standard hentry category-releng category-taskcluster tag-internship tag-mozilla tag-release-engineering tag-spidermonkey tag-taskcluster-2 clear">
+                            <div class="entry-wrap wrap clear">
+
+                                <header class="entry-header">
+
+                                    {% if page.categories %}
+                                    <span class="categories-links">
+                                        {% for category in page.categories %}
+                                        <a href="http://localhost:4000/category/{{category}}/" title="View all posts in {{category}}" rel="category tag">{{category}}</a>,
+                                        {% endfor %}
+                                    </span>
+                                    {% endif %}
+
+                                    <h1 class="entry-title">{{ page.title }}</h1>		
+                                </header><!-- .entry-header -->
+
+                                <footer class="entry-meta">
+                                    <span class="entry-date">
+                                        <time datetime="2015-07-20T03:34:18+00:00">{{ page.date | date: "%b %d, %Y" }}</time>
+                                    </span>
+                                    <span class="entry-word-count">
+                                        {{ page.content | number_of_words }} Words
+                                    </span>
+                                    {% if page.tags %}
+                                    <span class="tags-links">
+                                        {% for tag in page.tags %}
+                                        <a href="http://localhost:4000/tag/{{tag}}/" rel="tag">{{tag}}</a>,
+                                        {% endfor %}
+                                    </span>
+                                    {% endif %}
+                                </footer><!-- .entry-meta -->
+
+                                <div class="entry-content clear">
+                                    {{ page.content }}
+                                </div><!-- .entry-content -->
+
+                            </div><!-- .entry-wrap -->
+                        </article><!-- #post-## -->
+                        <nav role="navigation" id="nav-below" class="navigation-post">
+                            <div class="wrap clear">
+                                <h1 class="screen-reader-text">Post navigation</h1>
+                                {% if page.next %}
+                                    <div class="next">
+                                        <a href="{{site.url}}{{page.next.url}}" rel="next">
+                                            <span class="meta-nav">&rarr;</span>
+                                            <span class="text-nav">{{page.next.title}}</span>
+                                        </a>
+                                    </div>
+                                {% endif %}
+                                {% if page.previous %}
+                                <div class="previous">
+                                    <a href="{{site.url}}{{page.previous.url}}" rel="prev">
+                                        <span class="meta-nav">&larr;</span>
+                                        <span class="text-nav">{{page.previous.title}}</span>
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </nav><!-- #nav-below -->
+
+                    </div><!-- #content -->
+                </div><!-- #primary -->
+
+
+            </div><!-- #main -->
+
+
+{% include footer.html %}

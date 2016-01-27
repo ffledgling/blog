@@ -1,0 +1,110 @@
+---
+layout: post
+status: publish
+published: true
+title: 'Vim Ex #1'
+author:
+  display_name: ffledgling
+  login: ffledgling
+  email: ffledgling@gmail.com
+  url: ''
+author_login: ffledgling
+author_email: ffledgling@gmail.com
+wordpress_id: 619
+wordpress_url: http://ffledgling.wordpress.com/?p=619
+date: '2014-08-10 07:39:26 -0400'
+date_gmt: '2014-08-10 07:39:26 -0400'
+categories:
+- Technical
+tags:
+- Racket
+- REPL
+- slime.vim
+- tmux
+- Vim
+comments: []
+---
+<p>This is the first in what I've decided will be a series of infrequent posts dealing with my experiments with Vim.</p>
+<p>There's already a ton of material on this out there, but I've decided against my better judgement to add to the million articles and blog posts out there.</p>
+<p>This will give me a place to point people to when they ask me how to do <strong>X</strong> in vim, and, it will simultaneously serve as an archive for my experiments with vim. You know, incase I need to go back and redo my <code>.vimrc</code> (This happens more frequently than I'd care to admit)</p>
+<hr />
+<p><a href="http://blog.ffledgling.com/wp-content/uploads/2014/08/slime-vim-setup.png"><img class="alignleft size-large wp-image-626" src="http://blog.ffledgling.com/wp-content/uploads/2014/08/slime-vim-setup.png?w=696" alt="Tmux and slime.vim , Click to see full screen." width="696" height="396" /></a></p>
+<p>&nbsp;</p>
+<p>I have these phases of intense workflow, tool and knowledge gathering followed by long periods where I use some of these newer tools, tips and tricks and the rest are forgotten with time.</p>
+<p>I had one of these phases of intense learning these past couple of days.<br />
+I had a huge bout with irssi, vim, and a smaller one with pentadactyl and OSX.</p>
+<p>I'll be writing about the Vim side of things in this post. Mostly because I didn't find this particular combination of things anywhere exactly.</p>
+<p>So.<br />
+These past couple of days I've been mucking around with a couple of functional languages, namely Haskell and Racket.<br />
+Now the thing about functional languages (especially the more <em>lisp-y</em> versions) is that they work great with REPLs.<br />
+Now I'm no stranger to REPLs, I'm a python programmer before anything else and I've had the pleasure of using both the standard python REPL and iPython (a fancier python REPL with loads of extra features).</p>
+<p>The thing that almost always annoyed me so far as a Vim user has been the lack of an integrated editor/REPL that allows me run code right from my editor.<br />
+Everything I'd tried so far was/had been a hack.<br />
+I gradually learnt to use Tmux. Tmux's split panes helped.<br />
+I switched from:</p>
+
+{% highlight text %}
+edit text --> save text, close vim -->
+run code from cli --> check errors -->
+open vim --> repeat
+{% endhighlight %}
+
+<p>to</p>
+
+{% highlight text %}
+edit text --> save --> switch pane -->
+run code from cli --> switch pane -->
+check errors --> edit text --> repeat
+{% endhighlight %}
+
+<p>which was/is somewhat faster... but there was something missing.<br />
+I'd seen Emacs users who wrote Lisp code and ran it right from the editor with code magically running from inside their edit buffer/pane.<br />
+So that it actually becomes:</p>
+
+{% highlight text %}
+edit text --> save --> run from editor -->
+check errors --> edit text --> repeat
+{% endhighlight %}
+
+<p>No switch panes, buffers, jumping in and out of your editor.</p>
+<p>For the lazy programmer this is better because it's fewer steps.<br />
+For the efficiency seeker it's much much faster and speeds up development significantly.</p>
+<p>Now I wanted this for vim, and for a long time I didn't search hard enough because I <em>got by</em> with the afore-mentioned tmux split method. But no more!</p>
+<p>While setting up vim for use with racket I ran across this fine page <a href="http://docs.racket-lang.org/guide/Vim.html">Vim for Racket</a></p>
+<p>This has some amazing stuff, but the gold-mine here is <strong>slime.vim</strong> , it gives you the same capabilities advantages as the live REPL evaluation in Emacs, in vim!</p>
+<p>It uses a mixture of <code>tmux</code> (or <code>screen</code> if that's your thing), <code>vim</code> and some behind the scenes file sockets and other magic to dump whatever you want from the editor into the REPL and which then evaluates the code.<br />
+It's brilliant!<br />
+The nice thing about it?<br />
+It's not racket specific, you can use it with any language that has a REPL/interpreter.<br />
+This means you can use it with : Python, Perl, Ruby, JavaScript (node.js) and many many variants of lisp.</p>
+<p>There's an even fancier variant with <strong><em>many</em></strong> more features of this called <a href="https://bitbucket.org/kovisoft/slimv">slimv</a> which I haven't gotten around to trying but looks <em>very</em> promising.</p>
+<hr />
+<p><a href="http://blog.ffledgling.com/wp-content/uploads/2014/08/lambda-fancy.png"><img class="alignleft size-full wp-image-627" src="http://blog.ffledgling.com/wp-content/uploads/2014/08/lambda-fancy.png" alt="Pretty Greek Symbols!" width="414" height="87" /></a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>Now to other absolutely fabulous but frivolous discovery.<br />
+Vim 7.3+ has a feature called conceal.<br />
+This lets you select strings and replace them with a single character. How might this help you ask?<br />
+Well, programming languages are ,in some sense, an abstraction of, or atleast draw heavily from mathematics.</p>
+<p>Now mathematics works with lots of Greek Symbols, and some of that has carried over to programming languages. But since it's hard to actually type &lambda; or &Sigma; directly, we're left with typing lambda or sum as words instead, which is fine, except it's not as easy to read as a mathematical equation.</p>
+<p>Enter conceal.<br />
+It lets you convert all your <em>word-y</em> keywords into beautiful looking Greek symbols.<br />
+Why would someone want to do that?<br />
+It looks good!<br />
+I did say this was a frivolous one didn't I?</p>
+<p>If you're a pythonista, there's <a href="https://github.com/ehamberg/vim-cute-python">vim-cute-python</a></p>
+<hr />
+<p>If anyone's interested in what goes into the <code>.vimrc</code> it's not much, all I added was</p>
+{% highlight vimscript %}
+au VimEnter * syntax keyword racketSyntax lambda conceal cchar=λ
+au VimEnter * hi! link Conceal racketSyntax
+au VimEnter * set conceallevel=2
+{% endhighlight %}
+<hr />
+<p>Further reading and related links:</p>
+<ol>
+<li>http://docs.racket-lang.org/guide/Vim.html</li>
+<li>https://bitbucket.org/kovisoft/slimv</li>
+<li>http://cdated.com/drawing-lambdas/</li>
+<li>https://github.com/ehamberg/vim-cute-python</li><br />
+</ol></p>

@@ -1,0 +1,17 @@
+TODO
+----
+
+- Ensure RSS/Atom feed
+- Fix linking and categories
+- Create category and tag pages (with links to everything in that category)
+- Keep old comments around
+- Move resources CSS, JS, Photos from Wordpress to raw resources or into content.ffledgling.com
+- Make sure old links point to the same content or 302 to the new paths
+
+
+Done
+----
+- Fix side tags, categories
+- Remove additional, erronious heading
+- Fix next/previous page links
+- Create index page (similar to wordpress)

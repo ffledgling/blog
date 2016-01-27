@@ -1,0 +1,81 @@
+---
+layout: post
+status: publish
+published: true
+title: Bah! Debugging.
+author:
+  display_name: ffledgling
+  login: ffledgling
+  email: ffledgling@gmail.com
+  url: ''
+author_login: ffledgling
+author_email: ffledgling@gmail.com
+wordpress_id: 487
+wordpress_url: http://ffledgling.wordpress.com/?p=487
+date: '2014-06-20 03:58:17 -0400'
+date_gmt: '2014-06-20 03:58:17 -0400'
+categories:
+- Internship
+- Technical
+tags:
+- Debugging
+- Internship
+- Programming
+- Technical
+comments: []
+---
+<p>This post is just going to be a little ramble about how dealing with bugs is a PITA.<br />
+It's also a post about why debugging can be fun sometimes. Emphasis on <em>sometimes</em>.</p>
+<dl id="attachment_499" class="wp-caption alignleft" style="width:280px;">
+<dt class="wp-caption-dt"><a href="http://ffledgling.files.wordpress.com/2014/06/engineeronadisk-4074-e1403236131759.gif"><img class="size-full wp-image-499" src="http://ffledgling.files.wordpress.com/2014/06/engineeronadisk-4074-e1403236131759.gif" alt="How we typically debug" width="270" height="168" /></a></dt>
+<dd class="wp-caption-dd"><span style="color:#808080;"><em>Naive debugging process</em></span></dd></dl>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>Over the last couple of days I've been plagued by one of those phases in a developer's life where everything (and by everything I mean your code) seems to be breaking and falling apart around you and you can't for the life of you figure out why.</p>
+<p>You begin by suspecting a bug in your program, maybe an incorrect parameter to a function call, maybe a little missing punctuation or something silly like that. You look for it, and on most days you'd find it and fix the minor oversight caused by lapse in concentration.<br />
+But today is not that day.<br />
+Today is one of <em>those</em> days.<br />
+You don't find the bug, it's not going to be that simple.<br />
+You look for it but you don't find it, the plot thickens.</p>
+<p>It's a slippery bugger, but no worries you tell yourself, you've got this. You run through what the program should be doing in your head, and then think back and try to confirm that what you wrote matches up. At this point two things can happen, you either convince yourself that you did in fact implement what you were thinking of or you second guess yourself.<br />
+If you did second guess yourself, you might've started running through what you wrote to just to calm the building annoyance and/or panic.</p>
+<p>At this point you typically find something. You go <em>"Oh haha, this. Silly me."</em> , fix it and secretly feel happy inside because you know you got off easy, you re-run your application and tests.<br />
+And they <strong>fail</strong>.<br />
+And your application <strong>crashes</strong>.<br />
+And everything burns, the world is thrown into chaos and all hell breaks loose.<br />
+Only <em>this</em> time it's <em>just</em> a little worse than it was before.<br />
+An old saying goes "Hell hath no fury like a woman scorned", the author obviously hasn't had the pleasure of encountering a misbehaving computer program.<br />
+Because just in case you forgot, It's one of <em>those</em> days.</p>
+<p>At some point between the many back-to-back iterations of the panic followed by helpful yet unrelated bug-fixes, I<br />
+often sit back and stare at my laptop with a sense of deep mistrust.<br />
+What is this unfathomable black magic? Why does my dearest disobey me so? After about 4 minutes of deep philosophical questions and about 2 minutes into an existential crisis a quote typically floats back into my head. It basically boils down to <em>"Computers don't make mistakes"</em>.<br />
+This is true, computers are simply machines doing exactly what they've been told to, they're following instructions.</p>
+<p>If your application is not working, your instructions aren't right. Now if the instructions are wrong you just need to find the<br />
+wrong ones and fix them. Once you <em>do</em> find them and fix them and get things working, the euphoria<br />
+compares to little else.</p>
+<p>I ran into a few strange bugs back to back, but the strangest one took away a fair chunk of early morning hours to figure out. There's an operation (I say operation but it's an entire pipeline) that's done on the same two input files, the operation itself should be entirely platform independent because it's written in python for the most part with a couple of cross platform shell scripts thrown in. So one would reasonably expect the output to be the same regardless of platform.<br />
+The problem is the assumptions in that thought processes, the shell scripts worked fine and did everything right, the output file the pipeline spit had all the right contents too, but the <span style="text-decoration:underline;"><span style="color:#808080;text-decoration:underline;">md5sum</span></span>s did not match up. I went through the entire aforementioned struggle looking for what might be causing the problem.<br />
+What was it? It was <span style="text-decoration:underline;color:#808080;">sort</span>. GNU coreutils <span style="text-decoration:underline;color:#808080;">sort</span>. Apparently the way things are sorted on OSX is different from the way they are on Linux. Why? I don't know, there's no locale differences or special flags being used, the difference in output just <em>is</em>.<br />
+See this <a href="http://apple.stackexchange.com/a/81791/45997" target="_blank">Apple Stack Exchange Answer</a> for reference.<br />
+It took me a fair about of time to hunt these down, and I might never have tracked this one down had it not been for helpful advice from experienced team-members and fellow interns.</p>
+<p>This is where a well thought out debug routine would come in handy.<br />
+I've stolen mine from Sherlock Holmes because if you're trying to get to the bottom of a mystery, you might as well put out your detective hat on, right?. The basic idea is to keep digging until you can dig no further and at that point in the words of the great detective himself "when you have eliminated the impossible, whatever remains, however improbable, must be the truth".</p>
+<p>The key here is to actually <em><strong>eliminate</strong></em> the impossible before making conclusions about improbable.&nbsp; The generic way of doing this as I understand it is to formulate a hypothesis about what could be going wrong and/or where. Then you need to do something that will either confirm your hypothesis or absolutely irrefutably disprove it. If the thing you're doing neither proves nor disproves your suspicions you're doing it wrong and you should trying doing something different, otherwise you're just throwing mud at a wall and expecting some of it to stick.</p>
+<p>Once you're done with the 'thing', you now know which chunk of your application is causing trouble. You can now formulate a new hypothesis about which smaller chunk in your newly determined chunk is causing trouble and repeat the processes to ever finer granularity.</p>
+<p>In more formal terminology the idea of debugging can be distilled to the following:<br />
+"Finding your bug is a process of confirming the many things that you believe are true, until you find one which is not."</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<hr />
+<p><em>Footnote: </em></p>
+<p><em>The things mentioned in this post may seem self evident or obvious to more experienced hands, but this line of thought is interesting from my point of view because I've just begun to understand that debugging isn't just throwing a bunch of printfs in your code in hopes of figuring out what went wrong by looking at the output. It's a fairly logical and scientific procedure that's closer to medical dissection than anything else.</em></p>
+<hr />
+<p>&nbsp;</p>
+<h4>
+Related reading:</h4></p>
+<ul>
+<li><a href="http://www.cs.dartmouth.edu/~campbell/cs50/artofdebug.html" target="_blank">http://www.cs.dartmouth.edu/~campbell/cs50/artofdebug.html</a></li>
+<li><a href="http://heather.cs.ucdavis.edu/~matloff/Debug/Debug.pdf" target="_blank">http://heather.cs.ucdavis.edu/~matloff/Debug/Debug.pdf</a></li><br />
+</ul><br />
+&nbsp;</p>

@@ -1,0 +1,119 @@
+---
+layout: post
+status: publish
+published: true
+title: Oh what a Travis-ty.
+author:
+  display_name: ffledgling
+  login: ffledgling
+  email: ffledgling@gmail.com
+  url: ''
+author_login: ffledgling
+author_email: ffledgling@gmail.com
+wordpress_id: 517
+wordpress_url: http://ffledgling.wordpress.com/?p=517
+date: '2014-07-20 15:31:06 -0400'
+date_gmt: '2014-07-20 15:31:06 -0400'
+categories:
+- Internship
+- Technical
+tags:
+- .travis.yml
+- configuration file
+- Continous Integration
+- databases
+- MySQL
+- Travis configuration file
+- Travis-ci
+comments: []
+---
+<p><img class="alignnone" src="http://docs.travis-ci.com/images/travis-mascot-200px.png" alt="Travis-CI" width="201" height="199" /></p>
+<p>This post is about how I managed to, one part coax and one part coerce <a href="https://travis-ci.org/">Travis-ci</a> into doing what I wanted it to do.</p>
+<p>It's a bit lengthy and a bit technical so bear with me.</p>
+<p>I could write a TL;DR for it, but I'm not very inclined to do so because I feel this post is meant to highlight the process rather than the end result more than anything else.</p>
+<hr />
+<p>There comes a point in time in every developer's life where he has to get his hands dirty with Databases. There also comes a point in every Open Source developer's life where he decides to try out <a href="https://travis-ci.org/">Travis-ci</a>, because tests are good tight? Sure, they are.</p>
+<p>Continuous Integration testing is even better!<br />
+Write tests, run them on every commit, get email telling you whenever you broke something, it's great right? Sure it is! It catches human errors and gives you a safety net to fall back upon.</p>
+<p>I've been working on a <a href="//github.com/ffledgling/Senbonzakura">project</a> for a while and I had a couple of unit-tests I'd written for it (Shoutout to Hal for nagging me to get those tests in). I also managed to write a hacky integration test that seems to do the full run through.</p>
+<p>Now a couple of days ago, I decided to add in MySQL support for the application on the database side, so far I'd been happily using SQLite with no issues. I was using SQLAlchemy and figured I could just change the Database URI and MySQL would be drop-in replacement.</p>
+<p>Naive move.</p>
+<p>After a couple of hours of Googling, some help from the people in <a href="irc://irc.freenode.net/%23mysql">#mysql</a> and more help from <a href="https://wiki.mozilla.org/ReleaseEngineering">my team</a> I finally figured that I needed to tweak the mysql configuration file (<code>my.cnf</code> hence forth)&#042;.</p>
+<p>After making the required changes in <code>my.cnf</code> and in the Schema, I head over to my application, fire it up and do a run through for the <em>Nth</em> time to make sure things work as expected... SUCCESS!</p>
+<p>Now comes ... the hard(er?) part.<br />
+Remember the integration test I told you about?<br />
+Well it used to run on <a href="https://travis-ci.org/">Travis-ci</a> just fine... until I decided to add MySQL support.</p>
+<p>Those of you that have ever had the pleasure of using Travis, know that Github has tried to make things <a href="http://docs.travis-ci.com/user/getting-started/">very simple</a>. You tell Travis what you want it to do via the <code>.travis.yml</code>. You tell it what your tests are and how to run them and it'll go ahead and do just that.</p>
+<p>Great!</p>
+<p>Or so it is until you want to configure MySQL in ways that are not exposed by the <code>.travis.yml</code> file.</p>
+<p>There are always trade-offs between simplicity and power, so this should've been been expected, this <em>should have</em> been common sense. But like a child who doesn't learn fire is hot until he pokes his finger in it, there are some lessons that make <em>far</em> more sense in retrospect.</p>
+<p>I felt a tad disappointed and bewildered at first, not knowing where to begin.<br />
+Part of me abandoning all hope of having integration tests for my MySQL-support branch. But, and yes there is 'but', I decided to stick it out and see what I could figure out.</p>
+<p>So I began my journey to <em>hack</em>&#042;&#042; around the Travis build system.<br />
+There was a lot to do to even begin figuring out what to do.<br />
+Things become easier if you break down the process into the following major steps:</p>
+<ol>
+<li>Is it possible?</li>
+<li>What do I need to do it?</li>
+<li>How do I fulfill that need?</li><br />
+</ol></p>
+<p>To answer #1 I needed to figure out if I had control or some way to interact with the MySQL server and it's configuration other than the <code>.travis.yml</code>.</p>
+<p>To do this, I started changing the Travis config file to see if I could <code>cat</code> the common locations of the MySQL config file, most notably <code>/etc/my.cnf</code>. I also tried starting, stopping and getting the status of the <code>mysql</code> service.<br />
+Then I tried executing a couple of MySQL commands to set the variables I needed.</p>
+<p>None&nbsp; of these yielded positive results.</p>
+<p>I decided figuring out what kind of environment I was running in before trying to move further might be a good idea. I ran the basics to figure out what was going on :- <code>pwd</code>, <code>who</code>, <code>groups</code>, <code>mysql --help</code>.</p>
+<p>Then something happened, a ray light shone through the darkness.<br />
+While looking at the Travis log for the push I saw something that piqued my interest.<br />
+Travis was using <code>sudo</code> to install some of the other services I need in the Travis configuration file.</p>
+<p>Aha!</p>
+<p>An incandescent lightbulb came on somewhere.<br />
+Could it be?<br />
+Could I really have root access for this box? I quickly wrote up a <code>sudo ls</code> to test my theory and whaddya know? It worked! Now that I had root access I was 99% sure what I wanted to do was in fact possible regardless of how hard it might be.</p>
+<p>I set out with more confidence knowing that I now had the powers of <em>the root</em> bestowed upon me.</p>
+<p>Next up was figuring out #2.<br />
+There are plenty of ways to set the options I wanted for MySQL and I had to figure out which one would work. Following the principle of least resistance I tried setting the paramters I wanted using MySQL statements. I tried various combinations, preceding and succeeding the mysql statements with restarts.</p>
+<p>No success.</p>
+<p>Well this wasn't working and as someone succinctly put it, "Insanity is doing the same thing, over and over again, but expecting different results."<br />
+Now I like to think I am not insane and these combinations weren't really getting me anywhere, except maybe on the Travis server abuse/mis-use list.</p>
+<p>So I decided to try and tweak the configuration files.<br />
+The question was figuring out which one.<br />
+I began trying to <code>ls -al</code> the expected location(s), hmm, no luck. But <code>mysql --help</code> tells me there are more locations I can find the configuration file. So I just decide to <code>cat</code> all those at the same time^. This told me that the file I wanted was <code>/etc/mysql/my.cnf</code>.</p>
+<p>Got it. I had #2.<br />
+I could edit this file and have what I wanted.</p>
+<p>So on to #3.</p>
+<p>Now ideally I should be able to overwrite this file with the bare minimum I needed and get it working.</p>
+<p>Naive. Naive again.</p>
+<p>Everything stopped working the moment I did this.<br />
+To be fair, the default <code>my.cnf</code> had a lot of configuration and it was probably there for a reason.<br />
+So I tried a different route.</p>
+<p>I can just go in add the things I want in the existing file.<br />
+Sounds simple enough right?<br />
+Except for the part where I don't have access to the file. Or an editor to edit the file.</p>
+<p>Or do I?<br />
+Enter <code>sed</code>. Sometimes known by it's longer and more expressive name <code>stream editor</code>. So I wrote up a couple of sed commands that add in the lines to the file in the required part of the file. After confirming that the substitution actually works, I pushed with sweaty palms.</p>
+<p><strong>Success!</strong></p>
+<p>Sure it's not a <em>foolproof</em> solution and it <em>might</em> break whenever they modify the file, but it works and that's more than I could say before I started.<br />
+And isn't that what counts?</p>
+<p>Scroll down to see what <a href="https://f951e2746985b1096bee4be291edf379fdb055fe.googledrive.com/host/0B3t9YFXW9gyfN1ZWaEdqa21fbmM/Travis-CI_experiments.png">my glorious git log</a> looked like after I was done.</p>
+<hr />
+<p>^ Why at the same time you ask? Because Travis will error out on the first failure and I did not want to try all different combinations to figure out which one, it's a waste of time and resources.</p>
+<p>&#042; If you're interested in reading what the actual technical problem I was dealing with was, then read on.</p>
+<p>I had a 257 long character key as one of the fields in my database (in a table in my database, you pedantic people). Now all this works fine as long as you're running SQLite because SQLite doesn't really care much about what you're storing a whole lot, it typically accepts whatever you give it without question and dumps it in a file, it's the same when you're retrieving stuff from the database. In MySQL though, there are optimizations for speed and redundancy and lots of other stuff.<br />
+This means MySQL cares more about the data that you store in it. Enter DataTypes. With these DataTypes also come constraints on their size and length. As you might've guessed, MySQL doesn't support storing a 257 character long key (<code>VARCHAR</code> or <code>TEXT</code>) with default settings.<br />
+It's an InnoDB thing.<br />
+But it does give you a way to configure your options to force MySQL to allow larger keys and this is infact what I ended up doing.<br />
+The stuff you need in your my.cnf is:</p>
+
+{% highlight apacheconf %}
+#InnoDB config
+# http://dev.mysql.com/doc/refman/5.5/en/innodb-restrictions.html
+innodb_file_format = Barracuda
+innodb_large_prefix = 1
+innodb_file_per_table=true
+{% endhighlight %}
+
+<p>You'll also have to change your row storage format to <code>DYNAMIC</code>.<br />
+You can do this in SQLAlchemy like so <code>__table_args__={'mysql_row_format':'DYNAMIC', ...}</code></p>
+<p>&#042;&#042; I use 'hack' in the sense it was originally meant to be used; to imply exploratory interaction with a computer. See <a href="http://en.wikipedia.org/wiki/Hacker_%28programmer_subculture%29">this</a> and <a href="http://paulgraham.com/gba.html">this</a> for more details.</p>
+<hr />
+<p><a href="http://blog.ffledgling.com/wp-content/uploads/2014/07/screen-shot-2014-07-17-at-4-30-21-am.png"><img class="size-large wp-image-539" src="http://blog.ffledgling.com/wp-content/uploads/2014/07/screen-shot-2014-07-17-at-4-30-21-am.png?w=696" alt="My Glorious git log" width="696" height="824" title="My Glorious git log"/></a></p>
