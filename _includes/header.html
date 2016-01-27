@@ -3,7 +3,11 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width" />
+        {% if page.title %}
         <title>{{ page.title }} | ffledgling&#039;s blog</title>
+        {% else %}
+        <title>ffledgling&#039;s blog</title>
+        {% endif %}
         <link rel="profile" href="http://gmpg.org/xfn/11" />
         <!--[if lt IE 9]>
         <script src="{{site.url}}/javascript/html5.js" type="text/javascript"></script>

@@ -10,7 +10,6 @@ author:
 date: '2016-01-28 03:28:51 +0530'
 categories:
 - Technical
-- taskcluster
 tags:
 - Jekyll
 - WordPress
