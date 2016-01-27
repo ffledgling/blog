@@ -1,0 +1,13 @@
+While writing a post
+====================
+
+- Always try to keep *only* one category per post.
+- Use the date command to generate the date format for the post
+- Use an existing blog post as a template.
+- Always prefer to throw media into content.ffleddling.com and link from there.
+
+After
+=====
+
+NEVER EVER CHANGE THE POST META DATA AFTER YOU'VE PUT OUT A POST. EVER.
+SERIOUSLY. DON'T DO IT.
