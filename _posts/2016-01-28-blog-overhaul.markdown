@@ -8,6 +8,7 @@ author:
   login: ffledgling
   email: ffledgling@gmail.com
 date: '2016-01-28 03:28:51 +0530'
+comments: true
 categories:
 - Technical
 tags:
