@@ -84,5 +84,7 @@ Do yourself a favour, setup two Jenkins instances, lock one down and throw it be
 <hr />
 
 [1] I use the term User Experience a little loosely here to mean
+
 [2] I use build steps as a blanket term for compiling, building, testing and other things. The distinction between them is useful, but the lack of granularity does not take away from the overall point and is thus left out.
+
 [3] Can one of you Software Engineering folks lend me a citation?
