@@ -2,7 +2,7 @@
 layout: post
 status: publish
 published: True
-title: Jenkins: The Two Faces
+title: "Jenkins: The Two Faces"
 author:
   display_name: ffledgling
   login: ffledgling
