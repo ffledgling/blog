@@ -20,28 +20,28 @@ tags:
 
 While looking into the `import` statement in Python (2!) and how the internal Python import machinery works, I stumbled across mention of interesting functionality buried in `help('import')`. Here's what I found:
 
-<blockquote>
-If the module is not found in the cache, then "sys.meta_path" is searched (the specification for "sys.meta_path" can be found in **PEP 302**). The object is a list of *finder* objects which are queried in order as to whether they know how to load the module by calling their "find_module()" method with the name of the module. [...] If a finder can find the module it returns a *loader* (discussed later) or returns "None".
-</blockquote>
+> If the module is not found in the cache, then "sys.meta_path" is searched (the specification for "sys.meta_path" can be found in **PEP 302**). The object is a list of *finder* objects which are queried in order as to whether they know how to load the module by calling their "find_module()" method with the name of the module. [...] If a finder can find the module it returns a *loader* (discussed later) or returns "None".
 
 This probably doesn't make any sense at the moment, I had to go back and re-read everything slowly at least 3 times before I could figure out what was going. So I'm going to do you folks a solid and provide some context to what's going on.
 
 First, a quick refresher (most python developers can probably skip this).
 Here's how imports work in python (syntactically):
 
-    # Import the module
-    import spam
-    
-    # From the module spam, import bar into current namespace
-    from spam import bar
-    
-    # The same thing really, just rename bar as, well, you get the idea
-    from spam import bar as b_b_b_barz
-    
-    # From the module spam, import everything specified in __all__ list
-    # into the current namespace. If __all__ is not defined, import
-    # everything not starting with `_` instead.
-    from spam import *
+```python
+# Import the module
+import spam
+
+# From the module spam, import bar into current namespace
+from spam import bar
+
+# The same thing really, just rename bar as, well, you get the idea
+from spam import bar as b_b_b_barz
+
+# From the module spam, import everything specified in __all__ list
+# into the current namespace. If __all__ is not defined, import
+# everything not starting with `_` instead.
+from spam import *
+```
 
 Here's the difference between a module and a package in Python, as described officially (`help('import')`):
 
@@ -94,99 +94,99 @@ The finder object needs to be added the `sys.meta_path` list. Once that's done, 
 
 Let's look at what the `tmpfinder` actually looks like[3], I recommend reading through it and paying attention to the inline comments, they explain the Importer Protocol in slightly greater detail inline.
 ```python
-    import sys
-    import types # Used to instantiate a Module object, unavailable as a builtin
-    import os.path
+import sys
+import types # Used to instantiate a Module object, unavailable as a builtin
+import os.path
 
-    # os.path.join is used frequently, so we shorten our invocation
-    from os.path import join as ospj
+# os.path.join is used frequently, so we shorten our invocation
+from os.path import join as ospj
 
-    class TmpFinder(object):
-        """ Class to find and load modules from `/tmp/modules/` """
+class TmpFinder(object):
+    """ Class to find and load modules from `/tmp/modules/` """
 
-        def __init__(self):
-            self.greeting = 'Hello from TmpFinder'
-            self.tmp_prefix = ospj('/tmp', 'modules')
+    def __init__(self):
+        self.greeting = 'Hello from TmpFinder'
+        self.tmp_prefix = ospj('/tmp', 'modules')
 
-        def find_module(self, fullname, path=None):
-            # Adding print statements, so that (1) we know everytime find_module is
-            # invoked during the import process and (2) we see what the name and
-            # path of the module passed to us look like.
-            print self.greeting + ':find_module'
-            print (fullname, path)
+    def find_module(self, fullname, path=None):
+        # Adding print statements, so that (1) we know everytime find_module is
+        # invoked during the import process and (2) we see what the name and
+        # path of the module passed to us look like.
+        print self.greeting + ':find_module'
+        print (fullname, path)
 
-            # NOTE: For simplicity and brevity, we assume the module we're being
-            # given is a top-level file module, not a directory based package or
-            # sub-package. We also ignore `path`, doing so will break subpackage
-            # imports and relative imports. Adding this functionality is easy
-            # enough, but it detracts from the example, so we leave it out.
-            location = ospj(self.tmp_prefix, *(fullname.split('.')))
-            print 'Looking for module in: {}'.format(location)
+        # NOTE: For simplicity and brevity, we assume the module we're being
+        # given is a top-level file module, not a directory based package or
+        # sub-package. We also ignore `path`, doing so will break subpackage
+        # imports and relative imports. Adding this functionality is easy
+        # enough, but it detracts from the example, so we leave it out.
+        location = ospj(self.tmp_prefix, *(fullname.split('.')))
+        print 'Looking for module in: {}'.format(location)
 
-            if os.path.exists(location):
-                # We're returning the loader object here, which in this case, just
-                # happens to be the same as the finder object
-                return self
+        if os.path.exists(location):
+            # We're returning the loader object here, which in this case, just
+            # happens to be the same as the finder object
+            return self
 
-            # Default return for a function is None of course, so we do nothing
-            # special when we don't find the module
+        # Default return for a function is None of course, so we do nothing
+        # special when we don't find the module
 
-        def load_module(self, fullname):
-            # Helpful print statement tells us when loader is used
-            print self.greeting + 'load_module'
+    def load_module(self, fullname):
+        # Helpful print statement tells us when loader is used
+        print self.greeting + 'load_module'
 
-            # If the module already exists in `sys.modules` we *must* use that
-            # module, it's a mandatory part of the importer protcol
-            if fullname in sys.modules:
-                # Do nothing, just return None. This likely breaks the idempotency
-                # of import statements, but again, in the interest of being brief,
-                # we skip this part.
-                return
+        # If the module already exists in `sys.modules` we *must* use that
+        # module, it's a mandatory part of the importer protcol
+        if fullname in sys.modules:
+            # Do nothing, just return None. This likely breaks the idempotency
+            # of import statements, but again, in the interest of being brief,
+            # we skip this part.
+            return
 
-            location = ospj(self.tmp_prefix, *(fullname.split('.')))
-            print location
+        location = ospj(self.tmp_prefix, *(fullname.split('.')))
+        print location
 
-            try:
-                # The importer protocol requires the loader create a new module
-                # object, set certain attributes on it, then add it to
-                # `sys.modules` before executing the code inside the module (which
-                # is when the "module" actually gets code inside it)
+        try:
+            # The importer protocol requires the loader create a new module
+            # object, set certain attributes on it, then add it to
+            # `sys.modules` before executing the code inside the module (which
+            # is when the "module" actually gets code inside it)
 
-                m = types.ModuleType(fullname, 'This is the doc string for the module')
-                m.__file__ = '<tmp {}>'.format(location)
-                m.__name__ = fullname
-                m.__loader__ = self
-                sys.modules[fullname] = m
+            m = types.ModuleType(fullname, 'This is the doc string for the module')
+            m.__file__ = '<tmp {}>'.format(location)
+            m.__name__ = fullname
+            m.__loader__ = self
+            sys.modules[fullname] = m
 
-                # Attempt to open the file, and exec the code therein within the
-                # newly created module's namespace
-                with open(location, 'r') as f:
-                    exec f in sys.modules[fullname].__dict__
+            # Attempt to open the file, and exec the code therein within the
+            # newly created module's namespace
+            with open(location, 'r') as f:
+                exec f in sys.modules[fullname].__dict__
 
-                # Return our newly create module
-                return m
+            # Return our newly create module
+            return m
 
-            except Exception as e:
-                # If it fails, we need to reset sys.modules to it's old state. This
-                # is good practice in general, but also a mandatory part of the
-                # spec, likely to keep the import statement idempotent and free of
-                # side-effects across imports.
+        except Exception as e:
+            # If it fails, we need to reset sys.modules to it's old state. This
+            # is good practice in general, but also a mandatory part of the
+            # spec, likely to keep the import statement idempotent and free of
+            # side-effects across imports.
 
-                # Delete the entry we might've created; use LBYL to avoid nested
-                # exception handling
-                if sys.modules.get(fullname):
-                    del sys.modules[fullname]
-                raise e
+            # Delete the entry we might've created; use LBYL to avoid nested
+            # exception handling
+            if sys.modules.get(fullname):
+                del sys.modules[fullname]
+            raise e
 ```
 
 Now, how do we actually try it out? Simple enough, first let's crate a python module to import, here's what it looks like:
 
 ```python
-    In [7]: %cat /tmp/modules/spam
-    #!/usr/bin/env python
+In [7]: %cat /tmp/modules/spam
+#!/usr/bin/env python
 
-    def foo():
-        print "Yay, we are spam!"
+def foo():
+    print "Yay, we are spam!"
 ```
 
 Just a run-of-the-mill `foo()` function inside the `spam` module.
@@ -194,50 +194,51 @@ Just a run-of-the-mill `foo()` function inside the `spam` module.
 Fire up your interpreter in the same directory as `[tmpfinder.py](http://tmpfinder.py)` and try importing spam now:
 
 ```python
-    In [1]: import spam
-    ---------------------------------------------------------------------------
-    ImportError                               Traceback (most recent call last)
-    <ipython-input-1-bdb680daeb9f> in <module>()
-    ----> 1 import spam
+In [1]: import spam
+-------------------------------------------------
+ImportError     Traceback (most recent call last)
+<ipython-input-1-bdb680daeb9f> in <module>()
+----> 1 import spam
 
-    ImportError: No module named spam
+ImportError: No module named spam
 ```
 
 Makes sense, we've not really done anything special to tell Python where the spam module is. Let's do that using what we've learnt from PEP-302:
 
 ```python
-    In [2]: import sys
+In [2]: import sys
 
-    In [3]: import tmpfinder
+In [3]: import tmpfinder
 
-    In [4]: sys.meta_path.append(tmpfinder.TmpFinder())
+In [4]: sys.meta_path.append(tmpfinder.TmpFinder())
+```
+```
+In [5]: import spam
+Hello from TmpFinder:find_module
+('spam', None)
+Looking for module in: /tmp/modules/spam
+Hello from TmpFinderload_module
+/tmp/modules/spam
 
-    In [5]: import spam
-    Hello from TmpFinder:find_module
-    ('spam', None)
-    Looking for module in: /tmp/modules/spam
-    Hello from TmpFinderload_module
-    /tmp/modules/spam
-
-    In [6]: spam.foo()
-    Yay, we are spam!
+In [6]: spam.foo()
+Yay, we are spam!
 ```
 
 It works! But what did we do here? We create a `TmpFinder` object, which knows how to look for and load files in `/tmp/modules/` , we then add this to the list of meta path objects.
 
 The objects are iterated over and asked if they know how to find and load a module every time an `import` statement for said module is issued. See how our debug print statements kick in and leave a trail of breadcrumbs for us to follow? `find_module` is invoked, followed by `load_module` just as specified in the importer protocol. None of this surprising or special of course, if you've read PEP-302 or the earlier discussion, Python is just doing what it says on the tin. The point of this exercise is just to make the protocol more tangible. For completeness sake, let's see what happens when we *don't* find a module:
 
-```python
-    In [7]: import notspam
-    Hello from TmpFinder:find_module
-    ('notspam', None)
-    Looking for module in: /tmp/modules/notspam
-    ---------------------------------------------------------------------------
-    ImportError                               Traceback (most recent call last)
-    <ipython-input-7-3cb35e0ee4ca> in <module>()
-    ----> 1 import notspam
+```
+In [7]: import notspam
+Hello from TmpFinder:find_module
+('notspam', None)
+Looking for module in: /tmp/modules/notspam
+-------------------------------------------------
+ImportError     Traceback (most recent call last)
+<ipython-input-7-3cb35e0ee4ca> in <module>()
+----> 1 import notspam
 
-    ImportError: No module named notspam
+ImportError: No module named notspam
 ```
 
 The `find_module` on your finder object is still called, but since it isn't found, Python moves on and looks for it in more standard locations and formats, such as files and directories under `sys.path` . When it doesn't find a module named `notspam`, it raises the `ImportError` exception appropriately.
