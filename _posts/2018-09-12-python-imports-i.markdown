@@ -181,16 +181,19 @@ Let's look at what the `tmpfinder` actually looks like[3], I recommend reading t
 
 Now, how do we actually try it out? Simple enough, first let's crate a python module to import, here's what it looks like:
 
+```python
     In [7]: %cat /tmp/modules/spam
     #!/usr/bin/env python
 
     def foo():
         print "Yay, we are spam!"
+```
 
 Just a run-of-the-mill `foo()` function inside the `spam` module.
 
 Fire up your interpreter in the same directory as `[tmpfinder.py](http://tmpfinder.py)` and try importing spam now:
 
+```python
     In [1]: import spam
     ---------------------------------------------------------------------------
     ImportError                               Traceback (most recent call last)
@@ -198,9 +201,11 @@ Fire up your interpreter in the same directory as `[tmpfinder.py](http://tmpfind
     ----> 1 import spam
 
     ImportError: No module named spam
+```
 
 Makes sense, we've not really done anything special to tell Python where the spam module is. Let's do that using what we've learnt from PEP-302:
 
+```python
     In [2]: import sys
 
     In [3]: import tmpfinder
@@ -216,11 +221,13 @@ Makes sense, we've not really done anything special to tell Python where the spa
 
     In [6]: spam.foo()
     Yay, we are spam!
+```
 
 It works! But what did we do here? We create a `TmpFinder` object, which knows how to look for and load files in `/tmp/modules/` , we then add this to the list of meta path objects.
 
 The objects are iterated over and asked if they know how to find and load a module every time an `import` statement for said module is issued. See how our debug print statements kick in and leave a trail of breadcrumbs for us to follow? `find_module` is invoked, followed by `load_module` just as specified in the importer protocol. None of this surprising or special of course, if you've read PEP-302 or the earlier discussion, Python is just doing what it says on the tin. The point of this exercise is just to make the protocol more tangible. For completeness sake, let's see what happens when we *don't* find a module:
 
+```python
     In [7]: import notspam
     Hello from TmpFinder:find_module
     ('notspam', None)
@@ -231,6 +238,7 @@ The objects are iterated over and asked if they know how to find and load a modu
     ----> 1 import notspam
 
     ImportError: No module named notspam
+```
 
 The `find_module` on your finder object is still called, but since it isn't found, Python moves on and looks for it in more standard locations and formats, such as files and directories under `sys.path` . When it doesn't find a module named `notspam`, it raises the `ImportError` exception appropriately.
 
