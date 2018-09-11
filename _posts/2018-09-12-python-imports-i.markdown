@@ -20,7 +20,9 @@ tags:
 
 While looking into the `import` statement in Python (2!) and how the internal Python import machinery works, I stumbled across mention of interesting functionality buried in `help('import')`. Here's what I found:
 
-> If the module is not found in the cache, then "sys.meta_path" is searched (the specification for "sys.meta_path" can be found in **PEP 302**). The object is a list of *finder* objects which are queried in order as to whether they know how to load the module by calling their "find_module()" method with the name of the module. [...] If a finder can find the module it returns a *loader* (discussed later) or returns "None".
+<blockquote>
+If the module is not found in the cache, then "sys.meta_path" is searched (the specification for "sys.meta_path" can be found in **PEP 302**). The object is a list of *finder* objects which are queried in order as to whether they know how to load the module by calling their "find_module()" method with the name of the module. [...] If a finder can find the module it returns a *loader* (discussed later) or returns "None".
+</blockquote>
 
 This probably doesn't make any sense at the moment, I had to go back and re-read everything slowly at least 3 times before I could figure out what was going. So I'm going to do you folks a solid and provide some context to what's going on.
 
