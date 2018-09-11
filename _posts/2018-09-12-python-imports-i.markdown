@@ -2,7 +2,7 @@
 layout: post
 status: publish
 published: True
-title: "Writing a Custom Importer in Python"
+title: "Writing a Custom Importer in Python 🐍"
 author:
   display_name: ffledgling
   login: ffledgling
@@ -17,8 +17,6 @@ tags:
 - python-imports
 - python-internals
 ---
-
-# Writing a Custom Importer in Python 🐍
 
 While looking into the `import` statement in Python (2!) and how the internal Python import machinery works, I stumbled across mention of interesting functionality buried in `help('import')`. Here's what I found:
 
