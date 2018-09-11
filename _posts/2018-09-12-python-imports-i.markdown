@@ -57,7 +57,7 @@ The answer to the question it turns out, is a lot of things. The overview is:
 2. If it doesn't, it begins to search for it. The typical search involves looking through the directories in `sys.path` and checking for specific filenames that are derived from the name of the module you're trying to import.
 3. Once found, python will load it, create a module object and then create a reference to it, usually with the module name itself or the name we asked for (i.e `spam` if we do `import spam` or `foo` if we do `import spam as foo`)
 
-Most Python programmers who've worked with modules to any degree understand this flow to some degree. Nothing surprising going on there.
+Most Python programmers who've worked with modules in any capacity understand this flow to some degree. Nothing surprising going on there.
 
 Now back to where we started. See where the `help` says *"If the module is not found in the cache, then [...]".* Python has a nifty trick up its sleeve between **Step 1** and **Step 2**. The trick is, you can create your *own* custom Python module finder/loader. What would something like that do? Well, it'd allow you to write code to find and load a module the way *you* wanted to, *from* where you wanted to. Why would you want to do that, you ask? Glad you did, let's check out what the **PEP 302** mentioned in the original quote has to say about it:
 
@@ -90,7 +90,7 @@ As the name implies, the finder object is responsible for checking if it can fin
 
 The loader, as the you might've guessed, is responsible for actually loading the module and returning the newly created `module` object to the caller. It is also responsible ensuring a few other things happen before and during the loading phase, such as adding the module to `sys.modules` and ensuring attributes like `.__file__` exist on the module object and are instantiated correctly.
 
-The finder object needs to be added the `sys.meta_path` list. Once that's done, the import system automatically invokes a `.find_module` on the finder object added to the meta path and provides it the name of the module to be imported, as well as the package path it's a part of (so relative imports work, if you so wish). If the finder returns a loader object (instead of None), it's used to actually load the object.
+The finder object needs to be added the `sys.meta_path` list. Once that's done, the import system automatically invokes a `.find_module` on the finder object added to the meta path and provides it the name of the module to be imported, as well as the package path it's a part of (so relative imports work, if you so wish). If the finder returns a loader object (instead of None), it's used to actually load the object, by invoking the `.load_module` method.
 
 Let's look at what the `tmpfinder` actually looks like[3], I recommend reading through it and paying attention to the inline comments, they explain the Importer Protocol in slightly greater detail inline.
 ```python
@@ -179,7 +179,7 @@ class TmpFinder(object):
             raise e
 ```
 
-Now, how do we actually try it out? Simple enough, first let's crate a python module to import, here's what it looks like:
+Now, how do we actually try it out? Simple enough, first let's create a python module to import, here's what it looks like:
 
 ```python
 In [7]: %cat /tmp/modules/spam
@@ -191,7 +191,7 @@ def foo():
 
 Just a run-of-the-mill `foo()` function inside the `spam` module.
 
-Fire up your interpreter in the same directory as `[tmpfinder.py](http://tmpfinder.py)` and try importing spam now:
+Fire up your interpreter in the same directory as `tmpfinder.py` and try importing spam now:
 
 ```python
 In [1]: import spam
@@ -226,7 +226,7 @@ Yay, we are spam!
 
 It works! But what did we do here? We create a `TmpFinder` object, which knows how to look for and load files in `/tmp/modules/` , we then add this to the list of meta path objects.
 
-The objects are iterated over and asked if they know how to find and load a module every time an `import` statement for said module is issued. See how our debug print statements kick in and leave a trail of breadcrumbs for us to follow? `find_module` is invoked, followed by `load_module` just as specified in the importer protocol. None of this surprising or special of course, if you've read PEP-302 or the earlier discussion, Python is just doing what it says on the tin. The point of this exercise is just to make the protocol more tangible. For completeness sake, let's see what happens when we *don't* find a module:
+The objects are iterated over and asked if they know how to find and load a module every time an `import` statement for said module is issued. See how our debug print statements kick in and leave a trail of breadcrumbs for us to follow? `find_module` is invoked, followed by `load_module` just as specified in the importer protocol. None of this is surprising or special of course, if you've read PEP-302 or followed the earlier discussion, Python is just doing what it says on the tin. The point of this exercise is just to make the protocol more tangible. For completeness sake, let's see what happens when we *don't* find a module:
 
 ```
 In [7]: import notspam
