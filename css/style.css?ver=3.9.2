@@ -212,7 +212,7 @@ blockquote p {
 	/*font-size: 38px; */
 	font-family: "Playfair Display", serif;
 	font-size: 22px;
-	line-height: 1.3421052631;
+	line-height: 1.4;
 	margin-bottom: 34px;
 	padding-left: 34px;
         border-left: 4px solid #000000;
@@ -2103,12 +2103,17 @@ img#wpstats {
 ----------------------------------------------- */
 
 @media screen and (min-width: 312px) {
+    /* widths modified by hand to maintain the 
+     * same ratio/percentage, but adjusted to 
+     * %ages instead of fixed numbers */
 	.wrap,
 	#search-wrapper .searchform {
-		max-width: 264px;
+		/*max-width: 264px;*/
+		max-width: 84%;
 	}
 	#secondary {
-		max-width: 288px;
+		/* max-width: 288px;*/
+		max-width: 91%;
 	}
 }
 
@@ -2367,18 +2372,30 @@ img#wpstats {
 @media screen and (max-width: 600px) {
 	body, button, input, select, textarea {
 		font-size: 18px;
-		line-height: 1.4166666667;
+	        line-height: 1.3076923076;
 	}
 	#masthead img[src*="gravatar"] {
 		width: 72px;
 		height: 72px;
 	}
 	blockquote p {
-		font-size: 34px;
+		font-size: 22px;
 		font-weight: 400;
 		line-height: 1;
-		margin-bottom: 34px;
+		margin-bottom: 22px;
+	        line-height: 1.3076923076;
+	        padding-left: 17px;
 	}
+        /* Added pre and code blocks manually to reduce padding and adjust font sizing*/
+        pre {
+            padding: 17px;
+            margin: 0px;
+        }
+        code {
+	/* font: 19px/1.7894736842 Monaco, Consolas, "Andale Mono", "DejaVu Sans Mono", monospace; */
+            font-size: 16px;
+	    line-height: 1.3076923076;
+        }
 	.hentry {
 		padding: 34px 0 0;
 	}
