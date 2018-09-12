@@ -90,7 +90,7 @@ As the name implies, the finder object is responsible for checking if it can fin
 
 The loader, as the you might've guessed, is responsible for actually loading the module and returning the newly created `module` object to the caller. It is also responsible ensuring a few other things happen before and during the loading phase, such as adding the module to `sys.modules` and ensuring attributes like `.__file__` exist on the module object and are instantiated correctly.
 
-The finder object needs to be added the `sys.meta_path` list. Once that's done, the import system automatically invokes a `.find_module` on the finder object added to the meta path and provides it the name of the module to be imported, as well as the package path it's a part of (so relative imports work, if you so wish). If the finder returns a loader object (instead of None), it's used to actually load the object, by invoking the `.load_module` method.
+The finder object needs to be added to the `sys.meta_path` list. Once that's done, the import system automatically invokes a `.find_module` on the finder object added to the meta path and provides it the name of the module to be imported, as well as the package path it's a part of (so relative imports work, if you so wish). If the finder returns a loader object (instead of None), it's used to actually load the object, by invoking the `.load_module` method.
 
 Let's look at what the `tmpfinder` actually looks like[3], I recommend reading through it and paying attention to the inline comments, they explain the Importer Protocol in slightly greater detail inline.
 ```python
